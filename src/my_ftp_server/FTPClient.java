@@ -60,14 +60,15 @@ public class FTPClient {
 						logger.info("no such files into FTP_Server_directory\n");
 					else
 						logger.info("files:\n" + listFile + "\n");
-					os.close();
-					is.close();
+					os.flush();
 					break;
 				}
 				case "get": {
+					logger.info("get this file from server: " + strReceiveSplit[1]);
 					ObjectOutputStream os = new ObjectOutputStream(this.socketFTPClient.getOutputStream());
-					os.writeObject(strReceiveSplit[1]);
-	
+					os.writeObject(lineInput);
+					os.flush();
+					
 					DataInputStream dis = new DataInputStream(this.socketFTPClient.getInputStream());
 					logger.info("after read bytes\n");
 					byte[] readBytes = dis.readAllBytes();

@@ -56,7 +56,7 @@ public class FTPServer {
 				String command = rcvStringSplit[0];
 				logger.info("command received: " + command);
 
-				switch(command) {
+				switch(command.toLowerCase()) {
 					case "ls":{
 								List<String> listFile = Arrays.asList(this.absoluteDir.list());
 								

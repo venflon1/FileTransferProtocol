@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -37,12 +38,11 @@ public class FTPClient {
 			logger.severe("connection refused by server ftp!");
 	}
 
-	public void handle() throws IOException {
+	public void handle() throws IOException, ClassNotFoundException {
 		Scanner stdin = new Scanner(System.in);
 		boolean exit = false;
 
 		do {
-			logger.info("mm");
 			System.out.print("ftp>");
 			String lineInput = stdin.nextLine();
 			String[] strReceiveSplit = lineInput.split(" ");
@@ -53,7 +53,15 @@ public class FTPClient {
 					ObjectOutputStream os = new ObjectOutputStream(this.socketFTPClient.getOutputStream());
 					os.writeObject(command);
 					Log.info("send command: " + command +"\n");
+					
+					ObjectInputStream is = new ObjectInputStream(this.socketFTPClient.getInputStream());
+					List<String> listFile = (List<String>) is.readObject();
+					if(listFile.size() == 0)
+						logger.info("no such files into FTP_Server_directory\n");
+					else
+						logger.info("files:\n" + listFile + "\n");
 					os.close();
+					is.close();
 					break;
 				}
 				case "get": {
@@ -95,7 +103,7 @@ public class FTPClient {
 			
 			FTPClient myClientFTP = new FTPClient(addressServer, port);
 			myClientFTP.handle();
-		} catch (IOException e) {
+		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

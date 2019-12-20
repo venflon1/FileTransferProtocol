@@ -38,8 +38,6 @@ public class FTPClient {
 	}
 
 	public void handle() throws IOException {
-		ObjectInputStream is = new ObjectInputStream(this.socketFTPClient.getInputStream());
-		ObjectOutputStream os = new ObjectOutputStream(this.socketFTPClient.getOutputStream());
 		Scanner stdin = new Scanner(System.in);
 		boolean exit = false;
 
@@ -52,29 +50,29 @@ public class FTPClient {
 
 			switch (command.toLowerCase()) {
 				case "ls": {
+					ObjectOutputStream os = new ObjectOutputStream(this.socketFTPClient.getOutputStream());
 					os.writeObject(command);
 					Log.info("send command: " + command +"\n");
+					os.close();
 					break;
 				}
 				case "get": {
+					ObjectOutputStream os = new ObjectOutputStream(this.socketFTPClient.getOutputStream());
 					os.writeObject(strReceiveSplit[1]);
 	
 					DataInputStream dis = new DataInputStream(this.socketFTPClient.getInputStream());
 					logger.info("after read bytes\n");
-					byte[] readBytes = is.readAllBytes();
+					byte[] readBytes = dis.readAllBytes();
 					logger.info("read bytes\n");
 	
 					saveFile(new File("C:\\Users\\titano\\Desktop\\copy"), readBytes);
 					logger.info("file saved....written " + readBytes.length + " Bytes");
 	
 					dis.close();
+					os.close();
 					break;
 				}
 				case "quit": {
-					if(is != null)
-						is.close();
-					if(os != null)
-						os.close();
 					logger.info("ClientFTP closing...\n");
 					exit = true;
 					break;
